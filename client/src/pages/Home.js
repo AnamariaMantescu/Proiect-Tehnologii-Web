@@ -1,37 +1,63 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import parse from 'html-react-parser';
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import parse from "html-react-parser";
+import { deleteNote } from "../redux/notesSlice";
 
 const Home = () => {
+  //Use the useNavigate hook to navigate & send props
+  const navigate = useNavigate();
+  // Use the useSelector hook to get the notes from the Redux store
   const notes = useSelector((state) => state.notes);
-  console.log("notes", notes);
+  // Use the useDispatch hook to dispatch the deleteNote action
+  const dispatch = useDispatch();
 
+  // Function to handle deleting a note
+  const handleDelete = (id) => {
+    // Dispatch the deleteNote action with the ID of the note to delete
+    dispatch(deleteNote({ id }));
+  };
+  const handleClick = (item) => {
+    navigate("/note", { state: { item: item } });
+  };
   return (
     <div className="App">
       <h1>React Notes</h1>
       <div className="container">
+        {/* Link to add a new note */}
         <Link to="/note">
           <button type="button" className="btn btn-primary mb-2">
             Add New Note
           </button>
         </Link>
 
-        {notes.map((i) => {
+        {/* Loop through the notes and render them */}
+        {notes.map((item, id) => {
           return (
-            <div className="card mb-2" onClick={() => {}} key={i.id}>
+            <div className="card mb-2" key={item.id}>
               <div className="card-body">
-                <h5 className="card-title">{i.title}</h5>
-                <div className="card-text">{parse(i.content)}</div>
-                <Link to={`/note`} className="card-link">
-                  Edit
-                </Link>
+                <h5>{item.title}</h5>
+                <div>{parse(item.content)}</div>
+
+                <button
+                  type="button"
+                  className="btn btn-info mx-3"
+                  onClick={() => handleClick(item)}
+                >
+                  Editeza
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => handleDelete(item.id)}
+                >
+                  sterge
+                </button>
               </div>
             </div>
           );
         })}
       </div>
-
     </div>
   );
 };

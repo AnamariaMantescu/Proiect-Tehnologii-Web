@@ -15,7 +15,7 @@ const notesSlice = createSlice({
       note.content = action.payload.content;
     },
     deleteNote: (state, action) => {
-      state.splice(state.findIndex((note) => note.id === action.payload), 1);
+      state.splice(state.findIndex((note) => note.id === action.payload.id), 1);
     },
   },
 });

@@ -1,17 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import parse from "html-react-parser";
 import { deleteNote } from "../redux/notesSlice";
 
 const Home = () => {
   //Use the useNavigate hook to navigate & send props
   const navigate = useNavigate();
+
+  const location = useLocation(); //use the useLocation hook to get props
+
   // Use the useSelector hook to get the notes from the Redux store
   const notes = useSelector((state) => state.notes);
   // Use the useDispatch hook to dispatch the deleteNote action
   const dispatch = useDispatch();
 
+  const {login}= location.state
   // Function to handle deleting a note
   const handleDelete = (id) => {
     // Dispatch the deleteNote action with the ID of the note to delete
@@ -20,6 +24,14 @@ const Home = () => {
   const handleClick = (item) => {
     navigate("/note", { state: { item: item } });
   };
+  useEffect(()=>{
+   console.log('login',login)
+   if(!login){
+    navigate('/')
+   }
+  },[login, navigate])
+  
+
   return (
     <div className="App">
       <h1>React Notes</h1>

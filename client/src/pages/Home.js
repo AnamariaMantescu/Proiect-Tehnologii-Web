@@ -82,42 +82,57 @@ const Home = () => {
   }, [login, navigate]);
 
   return (
+    console.log('sortNotes',sortNotes.length),
     <div className="App">
-      <h1>React Notes</h1>
+      <h1 className="text-center">React Notes App</h1>
       <div className="container">
         {/* Link to add a new note */}
-        <Link to="/note">
-          <button type="button" className="btn btn-primary mb-2">
+
+        <div class="d-flex">
+          <button type="button" className="btn btn-primary mx-auto" onClick={()=>navigate('/note')}>
             Add New Note
           </button>
-        </Link>
-        <h2>Sorteaza dupa data</h2>
-        <select
-          className="form-control"
-          value={sortBy}
-          onChange={handleSortChange}
-        >
-          <option value="imp">Implicit</option>
-          <option value="asc">First Created </option>
-          <option value="desc">Last Created</option>
-        </select>
-        <h2>Sorteaza dupa materie</h2>
-        <select
-          className="form-control"
-          value={materie}
-          onChange={handleSortMaterie}
-        >
-          {materieTypes.map((item, index) => (
-            <option value={item} key={index}>
-              {item}
-            </option>
-          ))}
-        </select>
-        <input
-      type="text"
-      placeholder="cautare"
-      onChange={(e) => setSearchTerm(e.target.value)}
-    />
+        </div>
+{sortNotes.length>0?
+    <div>
+        <h2>Sorteaza dupa </h2>
+        <div className=" row my-3">
+          <div className="col-sm">
+            <h4>Data</h4>
+            <select
+              className="form-control"
+              value={sortBy}
+              onChange={handleSortChange}
+            >
+              <option value="imp">Implicit</option>
+              <option value="asc">First Created </option>
+              <option value="desc">Last Created</option>
+            </select>
+          </div>
+          <div className="col-sm">
+            <h4>Materie</h4>
+            <select
+              className="form-control"
+              value={materie}
+              onChange={handleSortMaterie}
+            >
+              {materieTypes.map((item, index) => (
+                <option value={item} key={index}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-sm">
+            <h4>Cautare</h4>
+            <input
+              type="text"
+              placeholder="cautare"
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="p-1"
+            />
+          </div>
+        </div>
         {/* Loop through the notes and render them */}
         {sortNotes.map((item, id) => {
           return (
@@ -146,7 +161,8 @@ const Home = () => {
             </div>
           );
         })}
-      </div>
+      </div>:<h2 className="text-center">Nu exista totite salvate</h2>}
+      </div> 
     </div>
   );
 };

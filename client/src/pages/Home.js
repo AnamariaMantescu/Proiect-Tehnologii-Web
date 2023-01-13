@@ -27,6 +27,8 @@ const Home = () => {
 
   const [sortBy, setSortBy] = useState("imp");
   const [materie, setMaterie] = useState("toate");
+  const [searchTerm, setSearchTerm] = useState("");
+
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
   };
@@ -34,11 +36,22 @@ const Home = () => {
     setMaterie(e.target.value);
   };
 
-  const filterNotes = notes.filter((note) => {
-    if (materie === "toate" ) {
+  const searchNotes = (searchTerm) => {
+    return notes.filter(
+      (note) =>
+        note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        note.materie.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
+  const searchReturn = searchNotes(searchTerm);
+
+  const filterNotes = searchReturn.filter((note) => {
+    if (materie === "toate") {
       return materie;
-    } 
-     return note.materie === materie;
+    }
+    return note.materie === materie;
   });
 
   const sortNotes = [...filterNotes].sort((a, b) => {
@@ -52,8 +65,14 @@ const Home = () => {
     }
   });
 
-  const materieTypes = ["toate", ...new Set(notes.filter(note => note.materie.length >0).map((note) => note.materie))];
-
+  const materieTypes = [
+    "toate",
+    ...new Set(
+      notes
+        .filter((note) => note.materie.length > 0)
+        .map((note) => note.materie)
+    ),
+  ];
 
   useEffect(() => {
     console.log("login", login);
@@ -94,6 +113,11 @@ const Home = () => {
             </option>
           ))}
         </select>
+        <input
+      type="text"
+      placeholder="cautare"
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
         {/* Loop through the notes and render them */}
         {sortNotes.map((item, id) => {
           return (

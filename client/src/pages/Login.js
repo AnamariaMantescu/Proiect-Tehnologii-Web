@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import loginService from "../service/loginService";
 import './Login.css'
 const Login = () => {
   const [email,setEmail]=useState("")
@@ -10,15 +11,7 @@ const Login = () => {
 
   const handleSubmit = async(event) => {
     event.preventDefault()
-    console.log('handle submit')
-        const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, password: password })
-    };
-    const response = await fetch('http://localhost:3001/login', requestOptions);
-    const data = await response.json();
-    console.log('data',data)
+     let data= await loginService(email,password)
     if(data.length > 0){
       navigate("/home", { state: { login: true } });
     }else{

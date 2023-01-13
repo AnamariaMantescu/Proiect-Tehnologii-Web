@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import parse from "html-react-parser";
@@ -14,8 +14,8 @@ const Home = () => {
   const notes = useSelector((state) => state.notes);
   // Use the useDispatch hook to dispatch the deleteNote action
   const dispatch = useDispatch();
-
-  const {login}= location.state
+  console.log("notes", notes);
+  const { login } = location.state;
   // Function to handle deleting a note
   const handleDelete = (id) => {
     // Dispatch the deleteNote action with the ID of the note to delete
@@ -24,13 +24,30 @@ const Home = () => {
   const handleClick = (item) => {
     navigate("/note", { state: { item: item } });
   };
-  useEffect(()=>{
-   console.log('login',login)
-   if(!login){
-    navigate('/')
-   }
-  },[login, navigate])
-  
+
+  const [sortBy, setSortBy] = useState("imp");
+
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+  };
+
+  const sortNotes = [...notes].sort((a, b) => {
+    if (sortBy === "asc") {
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    }
+    if (sortBy === "imp") {
+      return 0
+    } else {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    }
+  });
+
+  useEffect(() => {
+    console.log("login", login);
+    if (!login) {
+      navigate("/");
+    }
+  }, [login, navigate]);
 
   return (
     <div className="App">
@@ -42,15 +59,26 @@ const Home = () => {
             Add New Note
           </button>
         </Link>
-
+        <h2>Sorteaza dupa</h2>
+        <select
+          className="form-control"
+          value={sortBy}
+          onChange={handleSortChange}
+        >
+          <option value="imp">Implicit</option>
+          <option value="asc">First Created </option>
+          <option value="desc">Last Created</option>
+        </select>
         {/* Loop through the notes and render them */}
-        {notes.map((item, id) => {
+        {sortNotes.map((item, id) => {
           return (
             <div className="card mb-2" key={item.id}>
               <div className="card-body">
                 <h5>{item.title}</h5>
                 <div>{parse(item.content)}</div>
-
+                <h6 className="float-right font-weight-bold text-success">
+                  {item.materie}
+                </h6>
                 <button
                   type="button"
                   className="btn btn-info mx-3"

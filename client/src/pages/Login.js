@@ -13,7 +13,8 @@ const Login = () => {
     event.preventDefault()
      let data= await loginService(email,password)
     if(data.length > 0){
-      navigate("/home", { state: { login: true } });
+      console.log('data user',data)
+      navigate("/home", { state: { login: true,userId:data[0].id } });
     }else{
       setError(data.message)
     }

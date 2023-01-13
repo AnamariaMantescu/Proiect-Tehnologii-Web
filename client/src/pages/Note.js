@@ -1,45 +1,66 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill"; //import the react-quill library
 import "react-quill/dist/quill.snow.css"; //import the css for react-quill
-import { useDispatch } from "react-redux"; // import the useDispatch hook from react-redux
 import { useLocation, useNavigate } from "react-router-dom"; // import the useNavigate hook from react-router-dom
-import { addNote, editNote } from "../redux/notesSlice"; // import the addNote action from the notesSlice
 import moment from "moment"; //import the moment for create & edit date
+import createNoteService from "../service/createNoteService";
+import matterService from "../service/matterService";
+import MattersList from "../componenets/MattersList";
+import updateNoteService from "../service/updateNoteService";
 
 const Note = () => {
   const location = useLocation(); //use the useLocation hook to get props
   const navigate = useNavigate(); //use the useNavigate hook to navigate back to the previous page
-  const dispatch = useDispatch(); // use the useDispatch hook to dispatch the addNote action
   const item = location.state?.item ?? null; //check if item exist
+  const userId = location.state.userId;
   const [newNote] = useState(!item ? true : false); // check if it's a new Note
-  const [content, setContent] = useState(item ? item.content : ""); // initialize the state for the text entered in the editor
+  const [content, setContent] = useState(item ? item.description : ""); // initialize the state for the text entered in the editor
   const [title, setTitle] = useState(item ? item.title : ""); //initialize the state for the title of the note
-  const [materie, setMaterie] = useState(item ? item.materie : "");
+  const [materie, setMaterie] = useState("Romana");
+  const [matter, setMatter] = useState([]);
   const handleChange = (value) => {
     setContent(value);
   };
   // this function is called every time the text in the editor changes
   // it updates the text state with the current value of the editor
-  const handleSave = () => {
-    // check if title or text is empty
+
+  const createNote = async () => {
+   
     if (!title || !content) {
       alert("Titlul este obligatoriu");
       return;
     }
-    //create Date
-    let date = moment().format("MM/DD/YYYY hh:mm:ss");
-    console.log('date',date)
-    // Dispatch addNote action with the new note data
-    if (newNote) {
-      dispatch(addNote({ title, content, materie, date }));
-    } else {
-      dispatch(editNote({ id: item.id, title, content, materie, date }));
+    let date = moment().format("YYYY-MM-DD hh:mm:ss");
+    const newInputNote = {
+      id:54,
+      userId: userId,
+      matterId:2,
+      title: title,
+      description: content,
+      created: date,
+      matterName: materie,
+    };
+    console.log('editnote',newNote)
+    if(newNote){
+      createNoteService(newInputNote);
     }
-    setTitle("");
-    setContent("");
-    navigate(-1); // navigate back to the home page
+    else{
+      console.log('else',newInputNote)
+      updateNoteService(newInputNote)
+    }
+     
+    alert("notita a fost creeata cu succes");
+    navigate(-1);
   };
 
+  const getMatter = async () => {
+    const matter = await matterService();
+
+    setMatter(matter);
+  };
+  useEffect(() => {
+    getMatter();
+  }, []);
   return (
     <div className="mx-3">
       <h1>Notes</h1>
@@ -51,12 +72,10 @@ const Note = () => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        <input
-          className="form-control"
-          type="text"
-          placeholder="Materie..."
-          value={materie}
-          onChange={(e) => setMaterie(e.target.value)}
+        <MattersList
+          materie={materie}
+          setMaterie={setMaterie}
+          allMatters={matter}
         />
       </div>
       <ReactQuill
@@ -68,7 +87,7 @@ const Note = () => {
       <button
         type="button"
         className="btn btn-success mx-2 mt-2"
-        onClick={handleSave}
+        onClick={createNote}
       >
         Save
       </button>
@@ -204,6 +223,7 @@ Note.formats = [
   "link",
   "image",
   "color",
+  "video",
   "background",
 ];
 

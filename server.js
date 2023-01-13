@@ -65,12 +65,12 @@ app.get('/api/notes/get',(req, res) => {
 
 app.post('/api/notes/create',(req, res) => {
     const userId = req.body.userId;
-    const matterId = req.body.matterId;
+    // const matterId = req.body.matterId;
     const title = req.body.title;
     const description = req.body.description;
     const created = req.body.created;
     const matterName = req.body.matterName;
-    const sqlInsert = "INSERT INTO notes (userId, matterId, title, description, created, matterName) VALUES (?,?,?,?,?,?)"
+    const sqlInsert = "INSERT INTO notes (userId,  title, description, created, matterName) VALUES (?,?,?,?,?,?)"
     db.query(sqlInsert, [userId, matterId, title, description, created, matterName], (err, result) => {
         if(err) {
             res.send({err: err});

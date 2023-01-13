@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import {  useLocation, useNavigate } from "react-router-dom";
 import parse from "html-react-parser";
-import { deleteNote } from "../redux/notesSlice";
+import matterService from "../service/matterService";
+import getNotesService from "../service/getNotesService";
+import deleteNoteService from "../service/deleteNoteService";
+import MattersList from "../componenets/MattersList";
 
 const Home = () => {
   //Use the useNavigate hook to navigate & send props
@@ -11,33 +13,33 @@ const Home = () => {
   const location = useLocation(); //use the useLocation hook to get props
 
   // Use the useSelector hook to get the notes from the Redux store
-  const notes = useSelector((state) => state.notes);
   // Use the useDispatch hook to dispatch the deleteNote action
-  const dispatch = useDispatch();
-  console.log("notes", notes);
+  const userId=location.state.userId
   const { login } = location.state;
   // Function to handle deleting a note
   const handleDelete = (id) => {
-    // Dispatch the deleteNote action with the ID of the note to delete
-    dispatch(deleteNote({ id }));
+    deleteNoteService(id,setCount)
   };
   const handleClick = (item) => {
-    navigate("/note", { state: { item: item } });
+        navigate("/note", { state: { userId:userId,item:item} });
+
   };
+  const createNote=()=>{
+    navigate("/note", { state: { userId:userId} });
+  }
 
   const [sortBy, setSortBy] = useState("imp");
   const [materie, setMaterie] = useState("toate");
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [allMatters, setAllMatters] = useState([]);
+  const [data,setData]=useState([])
+  const [count,setCount]=useState(0)
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
   };
-  const handleSortMaterie = (e) => {
-    setMaterie(e.target.value);
-  };
 
   const searchNotes = (searchTerm) => {
-    return notes.filter(
+    return data.filter(
       (note) =>
         note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -65,104 +67,102 @@ const Home = () => {
     }
   });
 
-  const materieTypes = [
-    "toate",
-    ...new Set(
-      notes
-        .filter((note) => note.materie.length > 0)
-        .map((note) => note.materie)
-    ),
-  ];
-
+  const getMatter = async () => {
+    const matter = await matterService();
+    const newMatter = [{"id": 0, "title": "toate"}, ...matter];
+    setAllMatters(newMatter);
+  };
+  const getNotes = async () => {
+    const notes = await getNotesService();
+    setData(notes)
+  };
   useEffect(() => {
-    console.log("login", login);
+    getMatter();
+    getNotes()
+
     if (!login) {
       navigate("/");
     }
-  }, [login, navigate]);
+  }, [count]);
 
   return (
-    console.log('sortNotes',sortNotes.length),
-    <div className="App">
+    <div className="App" key={count}>
       <h1 className="text-center">React Notes App</h1>
       <div className="container">
         {/* Link to add a new note */}
 
-        <div class="d-flex">
-          <button type="button" className="btn btn-primary mx-auto" onClick={()=>navigate('/note')}>
+        <div className="d-flex">
+          <button
+            type="button"
+            className="btn btn-primary mx-auto"
+            onClick={createNote}
+          >
             Add New Note
           </button>
         </div>
-{sortNotes.length>0?
-    <div>
-        <h2>Sorteaza dupa </h2>
-        <div className=" row my-3">
-          <div className="col-sm">
-            <h4>Data</h4>
-            <select
-              className="form-control"
-              value={sortBy}
-              onChange={handleSortChange}
-            >
-              <option value="imp">Implicit</option>
-              <option value="asc">First Created </option>
-              <option value="desc">Last Created</option>
-            </select>
-          </div>
-          <div className="col-sm">
-            <h4>Materie</h4>
-            <select
-              className="form-control"
-              value={materie}
-              onChange={handleSortMaterie}
-            >
-              {materieTypes.map((item, index) => (
-                <option value={item} key={index}>
-                  {item}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="col-sm">
-            <h4>Cautare</h4>
-            <input
-              type="text"
-              placeholder="cautare"
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="p-1"
-            />
-          </div>
-        </div>
-        {/* Loop through the notes and render them */}
-        {sortNotes.map((item, id) => {
-          return (
-            <div className="card mb-2" key={item.id}>
-              <div className="card-body">
-                <h5>{item.title}</h5>
-                <div>{parse(item.content)}</div>
-                <h6 className="float-right font-weight-bold text-success">
-                  {item.materie}
-                </h6>
-                <button
-                  type="button"
-                  className="btn btn-info mx-3"
-                  onClick={() => handleClick(item)}
+        {1 > 0 ? (
+          <div>
+            <h2>Sorteaza dupa </h2>
+            <div className=" row my-3">
+              <div className="col-sm">
+                <h4>Data</h4>
+                <select
+                  className="form-control"
+                  value={sortBy}
+                  onChange={handleSortChange}
                 >
-                  Editeza
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={() => handleDelete(item.id)}
-                >
-                  sterge
-                </button>
+                  <option value="imp">Implicit</option>
+                  <option value="asc">First Created </option>
+                  <option value="desc">Last Created</option>
+                </select>
+              </div>
+              <div className="col-sm">
+                <h4>Materie</h4>
+               <MattersList materie={materie} setMaterie={setMaterie} allMatters={allMatters}/>
+              </div>
+              <div className="col-sm">
+                <h4>Cautare</h4>
+                <input
+                  type="text"
+                  placeholder="cautare"
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="p-1"
+                />
               </div>
             </div>
-          );
-        })}
-      </div>:<h2 className="text-center">Nu exista totite salvate</h2>}
-      </div> 
+            {/* Loop through the notes and render them */}
+            {sortNotes.map((item, id) => {
+              return (
+                <div className="card mb-2" key={item.id}>
+                  <div className="card-body">
+                    <h5>{item.title}</h5>
+                    <div>{parse(item.description)}</div>
+                    <h6 className="float-right font-weight-bold text-success">
+                      {item.matterName}
+                    </h6>
+                    <button
+                      type="button"
+                      className="btn btn-info mx-3"
+                      onClick={() => handleClick(item)}
+                    >
+                      Editeza
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-danger"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      sterge
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <h2 className="text-center">Nu exista totite salvate</h2>
+        )}
+      </div>
     </div>
   );
 };

@@ -26,21 +26,34 @@ const Home = () => {
   };
 
   const [sortBy, setSortBy] = useState("imp");
-
+  const [materie, setMaterie] = useState("toate");
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
   };
+  const handleSortMaterie = (e) => {
+    setMaterie(e.target.value);
+  };
 
-  const sortNotes = [...notes].sort((a, b) => {
+  const filterNotes = notes.filter((note) => {
+    if (materie === "toate" ) {
+      return materie;
+    } 
+     return note.materie === materie;
+  });
+
+  const sortNotes = [...filterNotes].sort((a, b) => {
     if (sortBy === "asc") {
       return new Date(a.createdAt) - new Date(b.createdAt);
     }
     if (sortBy === "imp") {
-      return 0
+      return 0;
     } else {
       return new Date(b.createdAt) - new Date(a.createdAt);
     }
   });
+
+  const materieTypes = ["toate", ...new Set(notes.filter(note => note.materie.length >0).map((note) => note.materie))];
+
 
   useEffect(() => {
     console.log("login", login);
@@ -59,7 +72,7 @@ const Home = () => {
             Add New Note
           </button>
         </Link>
-        <h2>Sorteaza dupa</h2>
+        <h2>Sorteaza dupa data</h2>
         <select
           className="form-control"
           value={sortBy}
@@ -68,6 +81,18 @@ const Home = () => {
           <option value="imp">Implicit</option>
           <option value="asc">First Created </option>
           <option value="desc">Last Created</option>
+        </select>
+        <h2>Sorteaza dupa materie</h2>
+        <select
+          className="form-control"
+          value={materie}
+          onChange={handleSortMaterie}
+        >
+          {materieTypes.map((item, index) => (
+            <option value={item} key={index}>
+              {item}
+            </option>
+          ))}
         </select>
         {/* Loop through the notes and render them */}
         {sortNotes.map((item, id) => {

@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Note from "./pages/Note";
+
 const App = () => {
   return (
     <BrowserRouter>

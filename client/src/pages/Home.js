@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import {  useLocation, useNavigate } from "react-router-dom";
 import matterService from "../service/matterService";
 import getNotesService from "../service/getNotesService";
 import MattersList from "../components/MattersList";
+import { useSelector } from "react-redux";
 
 import NoteCard from "../components/NoteCard";
 
@@ -10,15 +11,13 @@ const Home = () => {
   //Use the useNavigate hook to navigate & send props
   const navigate = useNavigate();
 
-  const location = useLocation(); //use the useLocation hook to get props
-
+  const userId = useSelector((state) => state.userId.userId);
   // Use the useSelector hook to get the notes from the Redux store
   // Use the useDispatch hook to dispatch the deleteNote action
-  const userId = location.state?.userId;
-  const login = location.state?.login
+  // const userId = location.state?.userId;
 
   const createNote = () => {
-    navigate("/note", { state: { userId: userId } });
+    navigate("/note");
   };
 
   const [sortBy, setSortBy] = useState("imp");
@@ -72,8 +71,7 @@ const Home = () => {
   useEffect(() => {
     getMatter();
     getNotes();
-
-    if (!login) {
+    if (!userId ) {
       navigate("/");
     }
   }, [count]);

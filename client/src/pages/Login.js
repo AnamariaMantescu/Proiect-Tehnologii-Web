@@ -1,19 +1,24 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import loginService from "../service/loginService";
+import { useDispatch } from "react-redux";
+
 import './Login.css'
+import { setUser, setUserId } from "../redux/userSlice";
 const Login = () => {
   const [email,setEmail]=useState("")
   const [password,setPassword]=useState("")
   const [error, setError] = useState(null);
   const navigate=useNavigate()
 
+  const dispatch = useDispatch();
 
   const handleSubmit = async(event) => {
     event.preventDefault()
      let data= await loginService(email,password)
     if(data.length > 0){
-      console.log('data user',data)
+      console.log('data user',data[0].id)
+      dispatch(setUser(data[0].id))
       navigate("/home", { state: { login: true,userId:data[0].id } });
     }else{
       setError(data.message)

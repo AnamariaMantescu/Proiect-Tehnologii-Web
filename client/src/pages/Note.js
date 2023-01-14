@@ -7,13 +7,14 @@ import createNoteService from "../service/createNoteService";
 import matterService from "../service/matterService";
 import MattersList from "../components/MattersList";
 import updateNoteService from "../service/updateNoteService";
+import { useSelector } from "react-redux";
 
 const Note = () => {
   const location = useLocation(); //use the useLocation hook to get props
   const navigate = useNavigate(); //use the useNavigate hook to navigate back to the previous page
   const item = location.state?.item ?? null; //check if item exist
-  const userId = location.state.userId;
-  console.log("userid", userId);
+  const userId = useSelector((state) => state.userId.userId);
+
   const [newNote] = useState(!item ? true : false); // check if it's a new Note
   const [content, setContent] = useState(item ? item.description : ""); // initialize the state for the text entered in the editor
   const [title, setTitle] = useState(item ? item.title : ""); //initialize the state for the title of the note

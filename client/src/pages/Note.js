@@ -5,19 +5,102 @@ import { useLocation, useNavigate } from "react-router-dom"; // import the useNa
 import moment from "moment"; //import the moment for create & edit date
 import createNoteService from "../service/createNoteService";
 import matterService from "../service/matterService";
-import updateNoteService from "../service/updateNoteService";
 import MattersList from "../components/MattersList";
+import updateNoteService from "../service/updateNoteService";
 
 const Note = () => {
   const location = useLocation(); //use the useLocation hook to get props
   const navigate = useNavigate(); //use the useNavigate hook to navigate back to the previous page
   const item = location.state?.item ?? null; //check if item exist
   const userId = location.state.userId;
+  console.log("userid", userId);
   const [newNote] = useState(!item ? true : false); // check if it's a new Note
   const [content, setContent] = useState(item ? item.description : ""); // initialize the state for the text entered in the editor
   const [title, setTitle] = useState(item ? item.title : ""); //initialize the state for the title of the note
-  const [materie, setMaterie] = useState("Romana");
+  const [materie, setMaterie] = useState({ id: 1, title: "Romana" });
   const [matter, setMatter] = useState([]);
+  const [file, setFile] = useState("");
+  const [images, setImages] = useState([]);
+  const [files, setFiles] = useState([]);
+
+  useEffect(() => {
+    getMatter();
+    if (!newNote) {
+      getImages();
+      getFiles();
+    }
+  }, []);
+
+  const saveFile = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const uploadImage = async (e) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    fetch("http://localhost:3001/upload/image/" + item.id, {
+      method: "POST",
+      body: formData,
+      headers: {
+        Accept: "multipart/form-data",
+      },
+      credentials: "include",
+    })
+      .then((res) => res.json)
+      .then((res) => {
+        getImages();
+      })
+      .catch((error) => [console.error(error)]);
+  };
+
+  const uploadFile = async (e) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    fetch("http://localhost:3001/upload/file/" + item.id, {
+      method: "POST",
+      body: formData,
+      headers: {
+        Accept: "multipart/form-data",
+      },
+      credentials: "include",
+    })
+      .then((res) => res.json)
+      .then((res) => {
+        getFiles();
+      })
+      .catch((error) => [console.error(error)]);
+  };
+
+  const getImages = async () => {
+    fetch("http://localhost:3001/api/images/" + item.id, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json, charset=UTF-8",
+        Accept: "application/json, text/html",
+      },
+      credentials: "include",
+    })
+      .then((data) => data.json())
+      .then((data) => {
+        setImages(data);
+      });
+  };
+
+  const getFiles = async () => {
+    fetch("http://localhost:3001/api/files/" + item.id, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json, charset=UTF-8",
+        Accept: "application/json, text/html",
+      },
+      credentials: "include",
+    })
+      .then((data) => data.json())
+      .then((data) => {
+        setFiles(data);
+      });
+  };
+
   const handleChange = (value) => {
     setContent(value);
   };
@@ -25,42 +108,69 @@ const Note = () => {
   // it updates the text state with the current value of the editor
 
   const createNote = async () => {
-   
     if (!title || !content) {
       alert("Titlul este obligatoriu");
       return;
     }
     let date = moment().format("YYYY-MM-DD hh:mm:ss");
+    console.log("itemmm", item);
     const newInputNote = {
-      id:54,
+      id: item ? item.id : null,
       userId: userId,
-      matterId:2,
+      matterId: materie.id,
       title: title,
       description: content,
       created: date,
-      matterName: materie,
+      matterName: materie.title,
     };
-    console.log('editnote',newNote)
-    if(newNote){
+    console.log("editnote", newNote);
+    if (newNote) {
       createNoteService(newInputNote);
+      alert("notita a fost creeata cu succes");
+    } else {
+      console.log("else", newInputNote);
+      updateNoteService(newInputNote);
     }
-    else{
-      console.log('else',newInputNote)
-      updateNoteService(newInputNote)
-    }
-     
-    alert("notita a fost creeata cu succes");
+
     navigate(-1);
   };
 
   const getMatter = async () => {
     const matter = await matterService();
-
+    console.log("matter", matter);
     setMatter(matter);
   };
-  useEffect(() => {
-    getMatter();
-  }, []);
+
+  const removeImage = (imageId) => {
+    fetch("http://localhost:3001/api/images/" + imageId, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json, charset=UTF-8",
+        Accept: "application/json, text/html",
+      },
+      credentials: "include",
+    })
+      .then((data) => data.json())
+      .then((data) => {
+        getImages();
+      });
+  };
+
+  const removeFile = (fileId) => {
+    fetch("http://localhost:3001/api/files/" + fileId, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json, charset=UTF-8",
+        Accept: "application/json, text/html",
+      },
+      credentials: "include",
+    })
+      .then((data) => data.json())
+      .then((data) => {
+        getImages();
+      });
+  };
+
   return (
     <div className="mx-3">
       <h1>Notes</h1>
@@ -77,7 +187,6 @@ const Note = () => {
           setMaterie={setMaterie}
           allMatters={matter}
         />
-        
       </div>
       <ReactQuill
         value={content}
@@ -85,6 +194,109 @@ const Note = () => {
         modules={Note.modules}
         formats={Note.formats}
       />
+      {!newNote && (
+        <div className="mt-3 mb-3">
+          <h4>Images</h4>
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            multiple={false}
+            onChange={saveFile}
+          />
+          <button onClick={uploadImage}>Upload</button>
+          <div className="row mt-4">
+            {images.length > 0 &&
+              images.map((i) => {
+                return (
+                  <div className="col-2" ky={i.id}>
+                    <span
+                      style={{
+                        fontSize: "15px",
+                        position: "absolute",
+                        right: "10px",
+                        top: "-8px",
+                        color: "white",
+                        background: "red",
+                        borderRadius: "50px",
+                        padding: "5px 13px",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => removeImage(i.id)}
+                    >
+                      x
+                    </span>
+                    <img
+                      style={{
+                        width: "100%",
+                        height: "100px",
+                        objectFit: "cover",
+                      }}
+                      src={require("../assets/" + i.image)}
+                    />
+                  </div>
+                );
+              })}
+          </div>
+          <h4>Files</h4>
+          <input
+            type="file"
+            name="image"
+            accept="file/*"
+            multiple={false}
+            onChange={saveFile}
+          />
+          <button onClick={uploadFile}>Upload</button>
+          <div className="row mt-4">
+            {files.length > 0 &&
+              files.map((i) => {
+                return (
+                  <div className="col-2" ky={i.id}>
+                    <span
+                      style={{
+                        fontSize: "15px",
+                        position: "absolute",
+                        right: "10px",
+                        top: "-8px",
+                        color: "white",
+                        background: "red",
+                        borderRadius: "50px",
+                        padding: "5px 13px",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => removeFile(i.id)}
+                    >
+                      x
+                    </span>
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        border: "3px solid #8217a6",
+                        borderRadius: "10px",
+                        textAlign: "center",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontWeight: "bold",
+                          color: "#8217a6",
+                          fontSize: "20px",
+                          marginTop: "5px",
+                          display: "block",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {i.file.split(".").pop()}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
       <button
         type="button"
         className="btn btn-success mx-2 mt-2"
@@ -95,7 +307,7 @@ const Note = () => {
       <button
         type="button"
         className="btn btn-danger mt-2"
-        onClick={() => navigate("/")}
+        onClick={() => navigate(-1)}
       >
         Cancel
       </button>
@@ -201,7 +413,7 @@ Note.modules = {
       { indent: "-1" },
       { indent: "+1" },
     ],
-    ["link", "image", "video"],
+    ["link", "video"],
     ["clean"],
   ],
   clipboard: {
@@ -222,7 +434,6 @@ Note.formats = [
   "bullet",
   "indent",
   "link",
-  "image",
   "color",
   "video",
   "background",

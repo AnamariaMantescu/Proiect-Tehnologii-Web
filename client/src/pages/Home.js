@@ -66,7 +66,7 @@ const Home = () => {
     setAllMatters(newMatter);
   };
   const getNotes = async () => {
-    const notes = await getNotesService();
+    const notes = await getNotesService(userId);
     setData(notes);
   };
   useEffect(() => {
@@ -132,7 +132,7 @@ const Home = () => {
             <div className="row">
               {sortNotes.map((item, id) => {
                 return (
-                  <NoteCard item={item} userId={userId} setCount={setCount} />
+                  <NoteCard item={item} userId={userId} setCount={setCount} key={id} />
                 );
               })}
             </div>

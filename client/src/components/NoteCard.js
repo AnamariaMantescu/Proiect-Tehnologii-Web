@@ -21,9 +21,9 @@ const NoteCard = ({ item, userId, setCount }) => {
     >
       <h5 className="card-header bg-transparent ">
         {item.title} <FaShareAlt className="float-right" />
-        <h6 className="float-right font-weight-bold text-success mx-1">
+        <span className="float-right font-weight-bold text-success mx-1">
           {item.matterName}
-        </h6>
+        </span>
       </h5>
       <div className="card-body ">
         <div>{parse(item.description)}</div>

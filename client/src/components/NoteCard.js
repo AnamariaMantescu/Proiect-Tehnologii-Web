@@ -4,7 +4,7 @@ import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
 import deleteNoteService from "../service/deleteNoteService";
 
-const NoteCard = ({ item, userId, setCount }) => {
+const NoteCard = ({ item, userId, setCount,setShowModal }) => {
   const navigate = useNavigate();
   const handleClick = (item) => {
     navigate("/note", { state: { userId: userId, item: item } });
@@ -20,7 +20,7 @@ const NoteCard = ({ item, userId, setCount }) => {
       style={{ height: "40vh" }}
     >
       <h5 className="card-header bg-transparent ">
-        {item.title} <FaShareAlt className="float-right" />
+        {item.title} <FaShareAlt className="float-right" onClick={()=>setShowModal(value=>!value)} />
         <span className="float-right font-weight-bold text-success mx-1">
           {item.matterName}
         </span>

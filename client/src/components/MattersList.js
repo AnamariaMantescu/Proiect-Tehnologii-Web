@@ -1,7 +1,6 @@
 import React from 'react'
 
 const MattersList = ({setMatter ,matter, allMatters}) => {
-    console.log('here??', matter)
   return (
     <select
     className="form-control"
@@ -9,7 +8,7 @@ const MattersList = ({setMatter ,matter, allMatters}) => {
     onChange={(e)=> setMatter(e.target.value)}
   >
     {allMatters.map((item, index) => (
-      <option value={item.title} key={index}>
+      <option value={item.title} key={index} id={index}>
         {item.title}
       </option>
     ))}

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {  useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import matterService from "../service/matterService";
 import getNotesService from "../service/getNotesService";
 import MattersList from "../components/MattersList";
 import { useSelector } from "react-redux";
 
 import NoteCard from "../components/NoteCard";
+import Modal from "../components/Modal";
 
 const Home = () => {
   //Use the useNavigate hook to navigate & send props
@@ -26,6 +27,7 @@ const Home = () => {
   const [allMatters, setAllMatters] = useState([]);
   const [data, setData] = useState([]);
   const [count, setCount] = useState(0);
+  const [showModal, setShowModal] = useState(false);
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
   };
@@ -71,7 +73,7 @@ const Home = () => {
   useEffect(() => {
     getMatter();
     getNotes();
-    if (!userId ) {
+    if (!userId) {
       navigate("/");
     }
   }, [count]);
@@ -127,10 +129,20 @@ const Home = () => {
               </div>
             </div>
             {/* Loop through the notes and render them */}
+
             <div className="row">
               {sortNotes.map((item, id) => {
                 return (
-                  <NoteCard item={item} userId={userId} setCount={setCount} key={id} />
+        <>
+                    {showModal && <Modal setShowModal={setShowModal} nota={item} id={id}/>}
+                    <NoteCard
+                      item={item}
+                      userId={userId}
+                      setCount={setCount}
+                      key={id}
+                      setShowModal={setShowModal}
+                    />
+              </>
                 );
               })}
             </div>

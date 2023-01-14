@@ -257,6 +257,17 @@ app.delete("/api/notes/delete/:id", (req, res) => {
     }
   });
 });
+//Retrieve users
+app.get("/api/users/", (req, res) => {
+  const sqlSelect = "SELECT * FROM users";
+  db.query(sqlSelect, (err, result) => {
+    if (err) {
+      res.send({ err: err });
+    } else {
+      res.send(result);
+    }
+  });
+});
 
 app.listen(3001, () => {
   console.log("Server started on port 3001");

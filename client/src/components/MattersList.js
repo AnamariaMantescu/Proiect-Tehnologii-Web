@@ -1,15 +1,15 @@
 import React from 'react'
 
-const MattersList = ({setMaterie,materie,allMatters}) => {
-  
+const MattersList = ({setMatter ,matter, allMatters}) => {
+    console.log('here??', matter)
   return (
     <select
     className="form-control"
-    value={materie.name}
-    onChange={(e)=>setMaterie(e.target.value)}
+    value={matter}
+    onChange={(e)=> setMatter(e.target.value)}
   >
     {allMatters.map((item, index) => (
-      <option value={item} key={index}>
+      <option value={item.title} key={index}>
         {item.title}
       </option>
     ))}

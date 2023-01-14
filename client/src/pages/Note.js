@@ -6,24 +6,22 @@ import moment from "moment"; //import the moment for create & edit date
 import createNoteService from "../service/createNoteService";
 import matterService from "../service/matterService";
 import MattersList from "../components/MattersList";
-import updateNoteService from "../service/updateNoteService";
-import { useSelector } from "react-redux";
+import updateNoteService from "../service/updateNoteService";import { useSelector } from "react-redux";
 
 const Note = () => {
   const location = useLocation(); //use the useLocation hook to get props
   const navigate = useNavigate(); //use the useNavigate hook to navigate back to the previous page
   const item = location.state?.item ?? null; //check if item exist
   const userId = useSelector((state) => state.userId.userId);
-
   const [newNote] = useState(!item ? true : false); // check if it's a new Note
   const [content, setContent] = useState(item ? item.description : ""); // initialize the state for the text entered in the editor
   const [title, setTitle] = useState(item ? item.title : ""); //initialize the state for the title of the note
-  const [materie, setMaterie] = useState({ id: 1, title: "Romana" });
-  const [matter, setMatter] = useState([]);
+  const [matter, setMatter] = useState(item ? item.matterName : 'Romana');
+  const [matters, setMatters] = useState([]);
   const [file, setFile] = useState("");
   const [images, setImages] = useState([]);
   const [files, setFiles] = useState([]);
-
+console.log(item)
   useEffect(() => {
     getMatter();
     if (!newNote) {
@@ -114,32 +112,31 @@ const Note = () => {
       return;
     }
     let date = moment().format("YYYY-MM-DD hh:mm:ss");
-    console.log("itemmm", item);
+    let matterITem = matters.find(x => x.title == matter);
     const newInputNote = {
       id: item ? item.id : null,
       userId: userId,
-      matterId: materie.id,
+      matterId: matterITem.id,
       title: title,
       description: content,
       created: date,
-      matterName: materie.title,
+      matterName: matterITem.title,
     };
     console.log("editnote", newNote);
     if (newNote) {
       createNoteService(newInputNote);
       alert("notita a fost creeata cu succes");
     } else {
-      console.log("else", newInputNote);
-      updateNoteService(newInputNote);
+      await updateNoteService(newInputNote);
     }
 
     navigate(-1);
   };
 
   const getMatter = async () => {
-    const matter = await matterService();
-    console.log("matter", matter);
-    setMatter(matter);
+    const response = await matterService();
+    console.log("response", response);
+    setMatters(response);
   };
 
   const removeImage = (imageId) => {
@@ -184,9 +181,9 @@ const Note = () => {
           onChange={(e) => setTitle(e.target.value)}
         />
         <MattersList
-          materie={materie}
-          setMaterie={setMaterie}
-          allMatters={matter}
+          matter={matter}
+          setMatter={(val) => setMatter(val)}
+          allMatters={matters}
         />
       </div>
       <ReactQuill

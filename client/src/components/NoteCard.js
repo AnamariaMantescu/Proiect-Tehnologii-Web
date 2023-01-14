@@ -9,7 +9,7 @@ const NoteCard = ({ item, userId, setCount }) => {
   const handleClick = (item) => {
     navigate("/note", { state: { userId: userId, item: item } });
   };
-    // Function to handle deleting a note
+  // Function to handle deleting a note
   const handleDelete = (id) => {
     deleteNoteService(id, setCount);
   };
@@ -21,12 +21,12 @@ const NoteCard = ({ item, userId, setCount }) => {
     >
       <h5 className="card-header bg-transparent ">
         {item.title} <FaShareAlt className="float-right" />
+        <h6 className="float-right font-weight-bold text-success mx-1">
+          {item.matterName}
+        </h6>
       </h5>
       <div className="card-body ">
         <div>{parse(item.description)}</div>
-        <h6 className="float-right font-weight-bold text-success">
-          {item.matterName}
-        </h6>
       </div>
       <div className="card-footer bg-transparent">
         <button

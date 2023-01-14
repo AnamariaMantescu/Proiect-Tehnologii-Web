@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {  useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import parse from "html-react-parser";
 import matterService from "../service/matterService";
 import getNotesService from "../service/getNotesService";
 import deleteNoteService from "../service/deleteNoteService";
-import MattersList from "../componenets/MattersList";
+import MattersList from "../components/MattersList";
+import { FaShare, FaShareAlt } from "react-icons/fa";
+import NoteCard from "../components/NoteCard";
 
 const Home = () => {
   //Use the useNavigate hook to navigate & send props
@@ -14,26 +16,19 @@ const Home = () => {
 
   // Use the useSelector hook to get the notes from the Redux store
   // Use the useDispatch hook to dispatch the deleteNote action
-  const userId=location.state.userId
+  const userId = location.state.userId;
   const { login } = location.state;
-  // Function to handle deleting a note
-  const handleDelete = (id) => {
-    deleteNoteService(id,setCount)
-  };
-  const handleClick = (item) => {
-        navigate("/note", { state: { userId:userId,item:item} });
 
+  const createNote = () => {
+    navigate("/note", { state: { userId: userId } });
   };
-  const createNote=()=>{
-    navigate("/note", { state: { userId:userId} });
-  }
 
   const [sortBy, setSortBy] = useState("imp");
   const [materie, setMaterie] = useState("toate");
   const [searchTerm, setSearchTerm] = useState("");
   const [allMatters, setAllMatters] = useState([]);
-  const [data,setData]=useState([])
-  const [count,setCount]=useState(0)
+  const [data, setData] = useState([]);
+  const [count, setCount] = useState(0);
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
   };
@@ -69,16 +64,16 @@ const Home = () => {
 
   const getMatter = async () => {
     const matter = await matterService();
-    const newMatter = [{"id": 0, "title": "toate"}, ...matter];
+    const newMatter = [{ id: 0, title: "toate" }, ...matter];
     setAllMatters(newMatter);
   };
   const getNotes = async () => {
     const notes = await getNotesService();
-    setData(notes)
+    setData(notes);
   };
   useEffect(() => {
     getMatter();
-    getNotes()
+    getNotes();
 
     if (!login) {
       navigate("/");
@@ -118,46 +113,31 @@ const Home = () => {
               </div>
               <div className="col-sm">
                 <h4>Materie</h4>
-               <MattersList materie={materie} setMaterie={setMaterie} allMatters={allMatters}/>
+                <MattersList
+                  materie={materie}
+                  setMaterie={setMaterie}
+                  allMatters={allMatters}
+                />
               </div>
-              <div className="col-sm">
+              <div className="col-sm ">
                 <h4>Cautare</h4>
                 <input
                   type="text"
                   placeholder="cautare"
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="p-1"
+                  style={{ width: "70%" }}
                 />
               </div>
             </div>
             {/* Loop through the notes and render them */}
-            {sortNotes.map((item, id) => {
-              return (
-                <div className="card mb-2" key={item.id}>
-                  <div className="card-body">
-                    <h5>{item.title}</h5>
-                    <div>{parse(item.description)}</div>
-                    <h6 className="float-right font-weight-bold text-success">
-                      {item.matterName}
-                    </h6>
-                    <button
-                      type="button"
-                      className="btn btn-info mx-3"
-                      onClick={() => handleClick(item)}
-                    >
-                      Editeza
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-danger"
-                      onClick={() => handleDelete(item.id)}
-                    >
-                      sterge
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+            <div className="row">
+              {sortNotes.map((item, id) => {
+                return (
+                  <NoteCard item={item} userId={userId} setCount={setCount} />
+                );
+              })}
+            </div>
           </div>
         ) : (
           <h2 className="text-center">Nu exista totite salvate</h2>

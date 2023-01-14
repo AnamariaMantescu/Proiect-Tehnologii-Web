@@ -5,8 +5,8 @@ import { useLocation, useNavigate } from "react-router-dom"; // import the useNa
 import moment from "moment"; //import the moment for create & edit date
 import createNoteService from "../service/createNoteService";
 import matterService from "../service/matterService";
-import MattersList from "../componenets/MattersList";
 import updateNoteService from "../service/updateNoteService";
+import MattersList from "../components/MattersList";
 
 const Note = () => {
   const location = useLocation(); //use the useLocation hook to get props
@@ -77,6 +77,7 @@ const Note = () => {
           setMaterie={setMaterie}
           allMatters={matter}
         />
+        
       </div>
       <ReactQuill
         value={content}

@@ -65,7 +65,7 @@ app.get('/api/notes/get',(req, res) => {
 
 app.post('/api/notes/create',(req, res) => {
     const userId = req.body.userId;
-    // const matterId = req.body.matterId;
+    const matterId = req.body.matterId;
     const title = req.body.title;
     const description = req.body.description;
     const created = req.body.created;

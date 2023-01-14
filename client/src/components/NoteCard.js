@@ -19,7 +19,7 @@ const NoteCard = ({ item, userId, setCount }) => {
       key={item.id}
       style={{ height: "40vh" }}
     >
-      <h5 class="card-header bg-transparent ">
+      <h5 className="card-header bg-transparent ">
         {item.title} <FaShareAlt className="float-right" />
       </h5>
       <div className="card-body ">
@@ -28,7 +28,7 @@ const NoteCard = ({ item, userId, setCount }) => {
           {item.matterName}
         </h6>
       </div>
-      <div class="card-footer bg-transparent">
+      <div className="card-footer bg-transparent">
         <button
           type="button"
           className="btn btn-info mx-3"

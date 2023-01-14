@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import parse from "html-react-parser";
 import matterService from "../service/matterService";
 import getNotesService from "../service/getNotesService";
-import deleteNoteService from "../service/deleteNoteService";
 import MattersList from "../components/MattersList";
-import { FaShare, FaShareAlt } from "react-icons/fa";
+
 import NoteCard from "../components/NoteCard";
 
 const Home = () => {
@@ -16,8 +14,8 @@ const Home = () => {
 
   // Use the useSelector hook to get the notes from the Redux store
   // Use the useDispatch hook to dispatch the deleteNote action
-  const userId = location.state.userId;
-  const { login } = location.state;
+  const userId = location.state?.userId;
+  const login = location.state?.login
 
   const createNote = () => {
     navigate("/note", { state: { userId: userId } });

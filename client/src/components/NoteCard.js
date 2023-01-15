@@ -15,33 +15,36 @@ const NoteCard = ({ item, userId, setCount,setShowModal }) => {
   };
   return (
     <div
-      className="card mb-4 col-md-5  mx-3"
-      style={{ height: "40vh" }}
+      className="card mb-4 col-md-4"
+      key={item.id}
+      style={{ height: "180px", border: '0px' }}
     >
-      <h5 className="card-header bg-transparent ">
+      <div style={{border: '1px solid rgba(0,0,0,0.125)', borderRadius: '5px'}} className="shadow">
+      <h6 className="card-header bg-transparent ">
         {item.title} <FaShareAlt className="float-right" onClick={()=>setShowModal(value=>!value)} />
         <span className="float-right font-weight-bold text-success mx-1">
           {item.matterName}
         </span>
-      </h5>
+      </h6>
       <div className="card-body ">
         <div>{parse(item.description)}</div>
       </div>
       <div className="card-footer bg-transparent">
         <button
           type="button"
-          className="btn btn-info mx-3"
+          className="btn btn-info btn-sm mr-3"
           onClick={() => handleClick(item)}
         >
           Editeza
         </button>
         <button
           type="button"
-          className="btn btn-danger"
+          className="btn btn-sm btn-danger"
           onClick={() => handleDelete(item.id)}
         >
           sterge
         </button>
+      </div>
       </div>
     </div>
   );

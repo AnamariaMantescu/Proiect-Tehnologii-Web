@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaTh, FaBars, FaCommentAlt } from "react-icons/fa";
+import { FaTh, FaBars } from "react-icons/fa";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -22,11 +22,7 @@ const Sidebar = ({ children }) => {
       name: "Notite",
       icon: <FaTh />,
     },
-    {
-      path: "/note",
-      name: "Nota",
-      icon: <FaCommentAlt />,
-    },
+
     {
       path: "/",
       name: "Sign Out",

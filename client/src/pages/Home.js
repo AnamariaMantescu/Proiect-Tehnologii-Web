@@ -28,6 +28,7 @@ const Home = () => {
   const [data, setData] = useState([]);
   const [count, setCount] = useState(0);
   const [showModal, setShowModal] = useState(false);
+
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
   };
@@ -36,8 +37,8 @@ const Home = () => {
     return data.filter(
       (note) =>
         note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        note.materie.toLowerCase().includes(searchTerm.toLowerCase())
+        note.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        note.matterName.toLowerCase().includes(searchTerm.toLowerCase())
     );
   };
 
@@ -52,12 +53,12 @@ const Home = () => {
 
   const sortNotes = [...filterNotes].sort((a, b) => {
     if (sortBy === "asc") {
-      return new Date(a.createdAt) - new Date(b.createdAt);
+      return new Date(a.created) - new Date(b.created);
     }
     if (sortBy === "imp") {
       return 0;
     } else {
-      return new Date(b.createdAt) - new Date(a.createdAt);
+      return new Date(b.created) - new Date(a.created);
     }
   });
 
@@ -81,25 +82,25 @@ const Home = () => {
 
   return (
     <div className="App" key={count}>
-      <h1 className="text-center">React Notes App</h1>
+      <h4 className="text-center">React Notes App</h4>
       <div className="container">
         {/* Link to add a new note */}
-
-        <div className="d-flex">
+        <div className="right">
           <button
             type="button"
-            className="btn btn-primary mx-auto"
+            style={{ float: "right" }}
+            className="btn btn-primary shadow"
             onClick={createNote}
           >
             Add New Note
           </button>
         </div>
-        {1 > 0 ? (
+        {data.length > 0 ? (
           <div>
-            <h2>Sorteaza dupa </h2>
+            <h5>Sorteaza dupa </h5>
             <div className=" row my-3">
               <div className="col-sm">
-                <h4>Data</h4>
+                <h6>Data</h6>
                 <select
                   className="form-control"
                   value={sortBy}
@@ -111,44 +112,46 @@ const Home = () => {
                 </select>
               </div>
               <div className="col-sm">
-                <h4>Materie</h4>
+                <h6>Materie</h6>
                 <MattersList
-                  materie={materie}
-                  setMaterie={setMaterie}
+                  matter={materie}
+                  setMatter={setMaterie}
                   allMatters={allMatters}
                 />
               </div>
               <div className="col-sm ">
-                <h4>Cautare</h4>
+                <h6>Cautare</h6>
                 <input
                   type="text"
                   placeholder="cautare"
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="p-1"
-                  style={{ width: "70%" }}
+                  style={{ width: "100%" }}
                 />
               </div>
             </div>
             {/* Loop through the notes and render them */}
-
             <div className="row">
               {sortNotes.map((item, id) => {
                 return (
-        <React.Fragment key={id}>
-                    {showModal && <Modal setShowModal={setShowModal} nota={item} />}
+                  <React.Fragment key={id}>
+                    {showModal && (
+                      <Modal setShowModal={setShowModal} nota={item} />
+                    )}
                     <NoteCard
                       item={item}
                       userId={userId}
                       setCount={setCount}
                       setShowModal={setShowModal}
                     />
-              </React.Fragment>
+                  </React.Fragment>
                 );
               })}
             </div>
           </div>
         ) : (
-          <h2 className="text-center">Nu exista totite salvate</h2>
+          <h5 className="text-center" style={{    position: 'absolute',
+            top:' 50%',marginLeft:'52vh'}}>Nu exista notite salvate</h5>
         )}
       </div>
     </div>

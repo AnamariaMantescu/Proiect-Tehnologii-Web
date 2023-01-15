@@ -16,7 +16,6 @@ const NoteCard = ({ item, userId, setCount,setShowModal }) => {
   return (
     <div
       className="card mb-4 col-md-5  mx-3"
-      key={item.id}
       style={{ height: "40vh" }}
     >
       <h5 className="card-header bg-transparent ">

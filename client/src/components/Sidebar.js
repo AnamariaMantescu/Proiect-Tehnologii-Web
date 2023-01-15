@@ -3,12 +3,15 @@ import {
     FaTh,
     FaBars,
     FaCommentAlt,
-    
 }from "react-icons/fa";
-import { NavLink } from 'react-router-dom';
+import { RiLogoutCircleLine } from "react-icons/ri";
+import { NavLink, useLocation } from 'react-router-dom';
 
 
 const Sidebar = ({children}) => {
+
+    const location=useLocation()
+    const loginPage=location.pathname ==='/'
     const[isOpen ,setIsOpen] = useState(false);
     const toggle = () => setIsOpen (!isOpen);
     const menuItem=[
@@ -22,10 +25,15 @@ const Sidebar = ({children}) => {
             name:"Nota",
             icon:<FaCommentAlt/>
         },
+        {
+            path:'/',
+            name:"Sign Out",
+            icon:<RiLogoutCircleLine/>
+        },
 
     ]
     return (
-        <div className="sidebar-container">
+        <div className="sidebar-container" style={{display:loginPage?'none':null}}>
            <div style={{width: isOpen ? "200px" : "50px"}} className="sidebar">
                <div className="top_section">
                    <h1 style={{display: isOpen ? "block" : "none"}} className="logo">Logo</h1>

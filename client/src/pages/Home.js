@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import matterService from "../service/matterService";
 import getNotesService from "../service/getNotesService";
 import MattersList from "../components/MattersList";
@@ -76,6 +76,7 @@ const Home = () => {
     if (!userId) {
       navigate("/");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count]);
 
   return (
@@ -133,16 +134,15 @@ const Home = () => {
             <div className="row">
               {sortNotes.map((item, id) => {
                 return (
-        <>
-                    {showModal && <Modal setShowModal={setShowModal} nota={item} id={id}/>}
+        <React.Fragment key={id}>
+                    {showModal && <Modal setShowModal={setShowModal} nota={item} />}
                     <NoteCard
                       item={item}
                       userId={userId}
                       setCount={setCount}
-                      key={id}
                       setShowModal={setShowModal}
                     />
-              </>
+              </React.Fragment>
                 );
               })}
             </div>

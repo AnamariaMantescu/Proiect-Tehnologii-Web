@@ -6,17 +6,19 @@ import moment from "moment"; //import the moment for create & edit date
 import createNoteService from "../service/createNoteService";
 import matterService from "../service/matterService";
 import MattersList from "../components/MattersList";
-import updateNoteService from "../service/updateNoteService";import { useSelector } from "react-redux";
+import updateNoteService from "../service/updateNoteService";
+import { useSelector } from "react-redux";
+import { quillFormat, quillModules } from "../components/QuillConfig";
 
 const Note = () => {
-  const location = useLocation(); //use the useLocation hook to get props
+  const location = useLocation(); //use the useLocation hook to get props passed in from the previous page
   const navigate = useNavigate(); //use the useNavigate hook to navigate back to the previous page
-  const item = location.state?.item ?? null; //check if item exist
-  const userId = useSelector((state) => state.userId.userId);
-  const [newNote] = useState(!item ? true : false); // check if it's a new Note
+  const item = location.state?.item ?? null; //check if item exist, if not set it as null
+  const userId = useSelector((state) => state.userId.userId); // get userId from global state
+  const [newNote] = useState(!item ? true : false); // check if it's a new Note or not
   const [content, setContent] = useState(item ? item.description : ""); // initialize the state for the text entered in the editor
   const [title, setTitle] = useState(item ? item.title : ""); //initialize the state for the title of the note
-  const [matter, setMatter] = useState(item ? item.matterName : 'Romana');
+  const [matter, setMatter] = useState(item ? item.matterName : "Romana");
   const [matters, setMatters] = useState([]);
   const [file, setFile] = useState("");
   const [images, setImages] = useState([]);
@@ -27,13 +29,15 @@ const Note = () => {
       getImages();
       getFiles();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Save selected file in state
   const saveFile = (e) => {
     setFile(e.target.files[0]);
   };
 
+  // upload image to server
   const uploadImage = async (e) => {
     const formData = new FormData();
     formData.append("image", file);
@@ -51,7 +55,7 @@ const Note = () => {
       })
       .catch((error) => [console.error(error)]);
   };
-
+  //uplod file to server
   const uploadFile = async (e) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -70,6 +74,7 @@ const Note = () => {
       .catch((error) => [console.error(error)]);
   };
 
+  // get images associated with the note from server
   const getImages = async () => {
     fetch("http://localhost:3001/api/images/" + item.id, {
       method: "GET",
@@ -85,6 +90,7 @@ const Note = () => {
       });
   };
 
+  // get files associated with the note from server
   const getFiles = async () => {
     fetch("http://localhost:3001/api/files/" + item.id, {
       method: "GET",
@@ -112,7 +118,7 @@ const Note = () => {
       return;
     }
     let date = moment().format("YYYY-MM-DD hh:mm:ss");
-    let matterITem = matters.find(x => x.title === matter);
+    let matterITem = matters.find((x) => x.title === matter);
     const newInputNote = {
       id: item ? item.id : null,
       userId: userId,
@@ -137,7 +143,7 @@ const Note = () => {
 
     setMatters(response);
   };
-
+  //remove image from  server
   const removeImage = (imageId) => {
     fetch("http://localhost:3001/api/images/" + imageId, {
       method: "DELETE",
@@ -152,7 +158,7 @@ const Note = () => {
         getImages();
       });
   };
-
+  //remove file from server
   const removeFile = (fileId) => {
     fetch("http://localhost:3001/api/files/" + fileId, {
       method: "DELETE",
@@ -230,7 +236,7 @@ const Note = () => {
                         objectFit: "cover",
                       }}
                       src={require("../assets/" + i.image)}
-                      alt='img'
+                      alt="img"
                     />
                   </div>
                 );
@@ -313,128 +319,8 @@ const Note = () => {
   );
 };
 
-Note.modules = {
-  toolbar: [
-    [{ header: "1" }, { header: "2" }, { font: [] }],
-    [{ size: [] }],
-    [
-      "bold",
-      "italic",
-      "underline",
-      "strike",
-      "blockquote",
-      {
-        color: [
-          "#000000",
-          "#e60000",
-          "#ff9900",
-          "#ffff00",
-          "#008a00",
-          "#0066cc",
-          "#9933ff",
-          "#ffffff",
-          "#facccc",
-          "#ffebcc",
-          "#ffffcc",
-          "#cce8cc",
-          "#cce0f5",
-          "#ebd6ff",
-          "#bbbbbb",
-          "#f06666",
-          "#ffc266",
-          "#ffff66",
-          "#66b966",
-          "#66a3e0",
-          "#c285ff",
-          "#888888",
-          "#a10000",
-          "#b26b00",
-          "#b2b200",
-          "#006100",
-          "#0047b2",
-          "#6b24b2",
-          "#444444",
-          "#5c0000",
-          "#663d00",
-          "#666600",
-          "#003700",
-          "#002966",
-          "#3d1466",
-          "custom-color",
-        ],
-      },
-      {
-        background: [
-          "#000000",
-          "#e60000",
-          "#ff9900",
-          "#ffff00",
-          "#008a00",
-          "#0066cc",
-          "#9933ff",
-          "#ffffff",
-          "#facccc",
-          "#ffebcc",
-          "#ffffcc",
-          "#cce8cc",
-          "#cce0f5",
-          "#ebd6ff",
-          "#bbbbbb",
-          "#f06666",
-          "#ffc266",
-          "#ffff66",
-          "#66b966",
-          "#66a3e0",
-          "#c285ff",
-          "#888888",
-          "#a10000",
-          "#b26b00",
-          "#b2b200",
-          "#006100",
-          "#0047b2",
-          "#6b24b2",
-          "#444444",
-          "#5c0000",
-          "#663d00",
-          "#666600",
-          "#003700",
-          "#002966",
-          "#3d1466",
-          "custom-color",
-        ],
-      },
-    ],
+Note.modules = quillModules;
 
-    [
-      { list: "ordered" },
-      { list: "bullet" },
-      { indent: "-1" },
-      { indent: "+1" },
-    ],
-    ["link", "video"],
-    ["clean"],
-  ],
-  clipboard: {
-    matchVisual: false,
-  },
-};
-
-Note.formats = [
-  "header",
-  "font",
-  "size",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
-  "link",
-  "color",
-  "video",
-  "background",
-];
+Note.formats = quillFormat;
 
 export default Note;

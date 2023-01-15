@@ -21,13 +21,13 @@ const Note = () => {
   const [file, setFile] = useState("");
   const [images, setImages] = useState([]);
   const [files, setFiles] = useState([]);
-console.log(item)
   useEffect(() => {
     getMatter();
     if (!newNote) {
       getImages();
       getFiles();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const saveFile = (e) => {
@@ -112,7 +112,7 @@ console.log(item)
       return;
     }
     let date = moment().format("YYYY-MM-DD hh:mm:ss");
-    let matterITem = matters.find(x => x.title == matter);
+    let matterITem = matters.find(x => x.title === matter);
     const newInputNote = {
       id: item ? item.id : null,
       userId: userId,
@@ -122,7 +122,6 @@ console.log(item)
       created: date,
       matterName: matterITem.title,
     };
-    console.log("editnote", newNote);
     if (newNote) {
       createNoteService(newInputNote);
       alert("notita a fost creeata cu succes");
@@ -135,7 +134,7 @@ console.log(item)
 
   const getMatter = async () => {
     const response = await matterService();
-    console.log("response", response);
+
     setMatters(response);
   };
 
@@ -231,6 +230,7 @@ console.log(item)
                         objectFit: "cover",
                       }}
                       src={require("../assets/" + i.image)}
+                      alt='img'
                     />
                   </div>
                 );
